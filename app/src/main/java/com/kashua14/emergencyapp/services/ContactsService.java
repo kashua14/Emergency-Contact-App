@@ -1,4 +1,4 @@
-package com.kashua14.emergencyapp;
+package com.kashua14.emergencyapp.services;
 
 import android.app.Dialog;
 import android.app.NotificationChannel;
@@ -16,9 +16,15 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 
+import com.kashua14.emergencyapp.ContactsActivity;
+import com.kashua14.emergencyapp.MainActivity;
+import com.kashua14.emergencyapp.R;
 import com.squareup.seismic.ShakeDetector;
+
+import java.util.Objects;
 
 public class ContactsService extends Service implements ShakeDetector.Listener {
 
@@ -38,8 +44,8 @@ public class ContactsService extends Service implements ShakeDetector.Listener {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId){
 
-        /**
-         * Shake sensor Implementation
+        /*
+          Shake sensor Implementation
          */
         SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         ShakeDetector shakeDetector = new ShakeDetector(this);
@@ -69,6 +75,7 @@ public class ContactsService extends Service implements ShakeDetector.Listener {
                 .build());
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public void hearShake() {
 
@@ -91,12 +98,12 @@ public class ContactsService extends Service implements ShakeDetector.Listener {
                 @Override
                 public void onClick(View v) {
                     epicDialog.dismiss();
-                    Intent intent = new Intent(ContactsService.this, Contacts.class);
+                    Intent intent = new Intent(ContactsService.this, ContactsActivity.class);
                     startActivity(intent);
                     count = 0;
                 }
             });
-            epicDialog.getWindow().setType(WindowManager.LayoutParams.TYPE_TOAST);
+            Objects.requireNonNull(epicDialog.getWindow()).setType(WindowManager.LayoutParams.TYPE_TOAST);
             epicDialog.show();
             Toast.makeText(this, "Shake detected!!", Toast.LENGTH_SHORT).show();
             count = 1;
@@ -110,8 +117,8 @@ public class ContactsService extends Service implements ShakeDetector.Listener {
         NotificationManager notificationManager = (NotificationManager)
                 context.getSystemService(Context.NOTIFICATION_SERVICE);
         NotificationChannel channel = new NotificationChannel("EmergencyContactChannel",
-                "Emergency Contacts List", NotificationManager.IMPORTANCE_DEFAULT);
-        channel.setDescription("Displays Emergency Contacts when phone is locked.");
+                "Emergency ContactsActivity List", NotificationManager.IMPORTANCE_DEFAULT);
+        channel.setDescription("Displays Emergency ContactsActivity when phone is locked.");
         assert notificationManager != null;
         notificationManager.createNotificationChannel(channel);
     }
